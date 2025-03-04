@@ -1,7 +1,8 @@
 const fs = require('fs');
 const http = require('http');
 const url = require('url');
-const { replaceTemplate} = require('./modules/replaceTemplate');
+const slugify = require('slugify');
+const { replaceTemplate } = require('./modules/replaceTemplate');
 /////////////////////////////////////////////////////////////////////
 //// File System
 // Blocking synchronous way :
@@ -44,9 +45,10 @@ console.log('will read file');
 //// HTTPS:
 
 
-
 const data = fs.readFileSync('./dev-data/data.json');
 const dataObj = JSON.parse(data);
+
+const slugs = dataObj.map(el => slugify(el.productName, { lower: true }));
 
 const tempOverView = fs.readFileSync(
 	`${__dirname}/templates/template-overview.html`,
