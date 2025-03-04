@@ -1,6 +1,7 @@
 const fs = require('fs');
 const http = require('http');
 const url = require('url');
+const { replaceTemplate} = require('./modules/replaceTemplate');
 /////////////////////////////////////////////////////////////////////
 //// File System
 // Blocking synchronous way :
@@ -42,20 +43,7 @@ console.log('will read file');
 /////////////////////////////////////////////////////////////////////
 //// HTTPS:
 
-const replaceTemplate = (temp, product) => {
-	let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
-	output = output.replace(/{%IMAGE%}/g, product.image);
-	output = output.replace(/{%QUANTITY%}/g, product.quantity);
-	output = output.replace(/{%PRICE%}/g, product.price);
-	output = output.replace(/{%FROM%}/g, product.from);
-	output = output.replace(/{%NUTRIENTS%}/g, product.nutrients);
-	// output = output.replace(/{%NOT_ORGANIC%}/g, product.organic);
-	output = output.replace(/{%DESCRIPTION%}/g, product.description);
-	output = output.replace(/{%ID%}/g, product.id);
-	if (!product.organic)
-		output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
-	return output;
-};
+
 
 const data = fs.readFileSync('./dev-data/data.json');
 const dataObj = JSON.parse(data);
@@ -73,13 +61,13 @@ const tempProduct = fs.readFileSync(
 	'utf-8'
 );
 
-
 const server = http.createServer((req, res) => {
-	console.log(url.parse(req.url, true));
-	const pathName = req.url;
+	const { query, pathname } = url.parse(req.url, true);
+
+	// const pathname = req.url;
 
 	// Overview Page
-	if (pathName === '/' || pathName === '/overview') {
+	if (pathname === '/' || pathname === '/overview') {
 		const cardsHTML = dataObj
 			.map((el) => replaceTemplate(tempCard, el))
 			.join('');
@@ -88,12 +76,14 @@ const server = http.createServer((req, res) => {
 		res.end(output);
 
 		// Product Page
-	} else if (pathName === '/products') {
+	} else if (pathname === '/product') {
+		const product = dataObj[query.id];
+		const output = replaceTemplate(tempProduct, product);
 		res.writeHead(200, { 'content-type': 'text/html' });
-		res.end(tempProduct);
+		res.end(output);
 
 		// API
-	} else if (pathName === '/api') {
+	} else if (pathname === '/api') {
 		res.writeHead(200, { 'Content-Type': 'text/html' });
 		res.end(data);
 		// Not Found
