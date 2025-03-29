@@ -4,8 +4,10 @@ const morgan = require('morgan');
 const app = express();
 const tourRouter = require('./routes/tour.Routes');
 const userRouter = require('./routes/user.routes');
+require('dotenv').config();
 
-const port = 3000;
+const port = process.env.PORT || 3000;
+
 // 2 - MIDDLEWARES
 app.use(morgan('dev'));
 app.use(express.json());
@@ -20,4 +22,4 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 // 5 - SERVER STARTED
-module.exports = { app, port: 3000 };
+module.exports = { app, port };
