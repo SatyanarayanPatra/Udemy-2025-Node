@@ -15,7 +15,22 @@ const Tour = require('../models/toursModel.js');
 
 const getAllTours = async (req, res) => {
   try {
-    const allTours = await Tour.find();
+    console.log('req.query', req.query);
+    const queryObj = { ...req.query };
+    const excludeFields = ['page', 'sort', 'limit', 'fields'];
+    excludeFields.forEach((el) => delete queryObj[el]);
+		// 1A - FILTERING
+    const query = Tour.find(queryObj);
+
+    const allTours = await query;
+
+    // const allTours = await Tour.find()
+    //   .where('duration')
+    //   .equals(req.query.duration)
+    //   .where('difficulty')
+    //   .equals(req.query.difficulty);
+    // //   .limit(5)
+    // //   .sort('price');
     res.status(200).json({
       status: 'success',
       // requestedAt: req.requestTime,
@@ -62,7 +77,7 @@ const createTour = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: 'Invalid data sent! Please try again',
+      message: err,
     });
     console.error('ERROR 🎇', err);
   }
@@ -88,11 +103,22 @@ const updateTour = async (req, res) => {
   }
 };
 
-const deleteTour = (req, res) => {
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
+const deleteTour = async (req, res) => {
+  try {
+    const tour = await Tour.findByIdAndDelete(req.params.id, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({
+      status: 'success',
+      data: 'Deleted',
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err,
+    });
+  }
 };
 
 module.exports = {
