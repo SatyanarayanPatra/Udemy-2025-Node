@@ -1,4 +1,4 @@
-Module.exports = class APIFeatures {
+class APIFeatures {
   constructor(query, queryString) {
     this.query = query;
     this.queryString = queryString;
@@ -51,4 +51,6 @@ Module.exports = class APIFeatures {
     this.query = this.query.skip(skip).limit(limit);
     return this;
   }
-};
+}
+
+module.exports = APIFeatures;
