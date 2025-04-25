@@ -4,6 +4,7 @@ const APIFeatures = require('../utils/apiFeatures.js');
 
 const getAllTours = async (req, res) => {
   try {
+    console.log('Query:', req.query);
     // EXECUTE QUERY
     const features = new APIFeatures(Tour.find(), req.query)
       .filter()
@@ -94,6 +95,17 @@ const deleteTour = async (req, res) => {
       status: 'success',
       data: 'Deleted',
     });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
+
+const getTourStats = async (req, res) => {
+  try {
+    // const stats = await Tour.aggregate([
   } catch (err) {
     res.status(400).json({
       status: 'fail',

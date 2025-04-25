@@ -17,8 +17,13 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/api/v1/tours', (req, res) => {
+  console.log(req.query);
+  res.send('Hello!');
+});
+
 // 3 - ROUTES
-app.use('/api/v1/tours', tourRouter);
+// app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 // 5 - SERVER STARTED
